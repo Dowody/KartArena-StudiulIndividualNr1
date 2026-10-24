@@ -1,5 +1,7 @@
+import { Finance } from "./components/Finance"
 import { FleetCost } from "./components/FleetCost"
 import { links, Nav } from "./components/Nav"
+import { TrackSketch } from "./components/TrackSketch"
 
 const idea = [
   { label: "Denumire", value: "„Kart Arena” S.R.L." },
@@ -22,7 +24,7 @@ const description = [
   },
   {
     label: "Asortimentul",
-    value: "Curse de 8–10 minute, întreceri între prieteni, evenimente de grup și jocuri arcade.",
+    value: "Curse de 8–10 minute, întreceri între prieteni, evenimente de grup și jocuri electronice.",
   },
   {
     label: "Destinația",
@@ -30,7 +32,7 @@ const description = [
   },
   {
     label: "Ambalajul",
-    value: "Fiind un serviciu, vom oferi bilete, vouchere cadou și pachete pentru grupuri.",
+    value: "Fiind un serviciu, vom oferi bilete, tichete cadou și pachete pentru grupuri.",
   },
 ]
 
@@ -44,7 +46,7 @@ const steps = [
 const swot = [
   {
     title: "Puncte tari",
-    note: "Strengths",
+    note: "Ce ne ajută",
     dark: true,
     points: [
       "Karturi electrice, fără fum.",
@@ -54,17 +56,17 @@ const swot = [
   },
   {
     title: "Puncte slabe",
-    note: "Weaknesses",
+    note: "Ce ne lipsește",
     dark: false,
     points: [
       "Investiție mare la început.",
-      "Cheltuieli pentru chirie și întreținere.",
+      "Cheltuieli lunare pentru benzină, salarii și energie.",
       "Afacerea nu este încă cunoscută.",
     ],
   },
   {
     title: "Oportunități",
-    note: "Opportunities",
+    note: "Ce putem folosi",
     dark: false,
     points: [
       "Organizarea de evenimente pentru grupuri.",
@@ -74,7 +76,7 @@ const swot = [
   },
   {
     title: "Riscuri",
-    note: "Threats",
+    note: "Ce ne poate afecta",
     dark: true,
     points: [
       "Creșterea costurilor.",
@@ -145,7 +147,7 @@ export default function App() {
               Ideea de afacere
             </h2>
             <p className="mt-6 text-[19px] leading-relaxed text-ink sm:text-[21px]">
-              Deschiderea unui centru de karting electric indoor, Kart Arena, cu o pistă de curse
+              Deschiderea unui centru de karting electric în interior, Kart Arena, cu o pistă de curse
               și o zonă de relaxare.
             </p>
           </div>
@@ -160,15 +162,11 @@ export default function App() {
         <section id="serviciu" className="scroll-mt-14 bg-black px-6 py-24 text-center text-white sm:py-32">
           <p className="text-[14px] text-[#86868b]">Prezentarea produsului / serviciului</p>
           <h2 className="mx-auto mt-3 max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight sm:text-[56px]">
-            Curse de karting electric indoor, jocuri arcade și zonă de relaxare.
+            Curse de karting electric în interior, jocuri electronice și zonă de relaxare.
           </h2>
-          <figure className="mx-auto mt-14 max-w-[1100px]">
-            <img
-              src="/track-concept.jpg"
-              alt="Conceptul pistei: circuit indoor cu bariere de protecție, două karturi electrice și ecranul de rezultate."
-              className="w-full rounded-[28px]"
-            />
-          </figure>
+          <div className="mx-auto mt-14 max-w-[1100px]">
+            <TrackSketch />
+          </div>
           <p className="mx-auto mt-8 max-w-[640px] text-[15px] leading-relaxed text-[#86868b]">
             O pistă de karting în interior, cu bariere de protecție, karturi electrice și un ecran
             care arată rezultatele curselor.
@@ -198,20 +196,21 @@ export default function App() {
         </section>
 
         <FleetCost />
+        <Finance />
 
         <section id="localitate" className="scroll-mt-14 bg-white px-6 py-24 text-center sm:py-36">
           <h2 className="mx-auto max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
             De ce ideea este bună pentru localitate
           </h2>
           <p className="mx-auto mt-8 max-w-[680px] text-[21px] leading-snug text-ink sm:text-[28px]">
-            În Chișinău sunt mulți tineri care caută activități noi. Un centru de karting indoor ar
+            În Chișinău sunt mulți tineri care caută activități noi. Un centru de karting în interior ar
             fi o opțiune de distracție în orice anotimp.
           </p>
         </section>
 
         <section id="swot" className="scroll-mt-14 bg-[#e8e8ed] px-3 pt-20 pb-3 sm:pt-28">
           <h2 className="px-4 pb-12 text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
-            Analiza SWOT
+            Analiza afacerii
           </h2>
           <div className="grid gap-3 md:grid-cols-2">
             {swot.map((block) => (

@@ -2,8 +2,9 @@ export const links = [
   { href: "#ideea", label: "Ideea" },
   { href: "#serviciu", label: "Serviciu" },
   { href: "#cost", label: "Cost" },
+  { href: "#finantare", label: "Bani" },
   { href: "#localitate", label: "Localitate" },
-  { href: "#swot", label: "SWOT" },
+  { href: "#swot", label: "Analiză" },
 ]
 
 export function Nav() {
