@@ -118,7 +118,7 @@ export default function App() {
           className="relative flex min-h-[100svh] scroll-mt-14 flex-col items-center justify-center overflow-hidden bg-black px-6 text-center text-white"
         >
           <img
-            src="/Modern%20Indoor%20Go-Kart%20Arena.png"
+            src={`${import.meta.env.BASE_URL}Modern Indoor Go-Kart Arena.png`}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />

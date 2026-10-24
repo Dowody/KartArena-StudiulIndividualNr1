@@ -139,18 +139,18 @@ export function FleetCost() {
 
         <div className="mt-14 grid gap-3 md:grid-cols-[1.4fr_1fr]">
           <img
-            src="/CRG%20Racing%20Kart%20Studio%20Showcase.png"
+            src={`${import.meta.env.BASE_URL}CRG Racing Kart Studio Showcase.png`}
             alt="Kartul CRG Centurion GX270, negru cu roșu, cu motor și scaun negru."
             className="h-full w-full rounded-[28px] object-cover"
           />
           <div className="grid h-full grid-cols-2 gap-3 md:grid-cols-1">
             <img
-              src="/crg-centurion.jpg"
+              src={`${import.meta.env.BASE_URL}crg-centurion.jpg`}
               alt="Fotografie din anunț: un kart CRG Centurion văzut de sus, pe un palet."
               className="h-full w-full rounded-[28px] object-cover object-top"
             />
             <img
-              src="/crg-centurion-fleet.jpg"
+              src={`${import.meta.env.BASE_URL}crg-centurion-fleet.jpg`}
               alt="Fotografie din anunț: mai multe karturi CRG Centurion așezate unul lângă altul."
               className="h-full w-full rounded-[28px] object-cover object-top"
             />
