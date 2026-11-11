@@ -1,7 +1,10 @@
+import { useEffect, useRef } from "react"
 import { Finance } from "./components/Finance"
 import { FleetCost } from "./components/FleetCost"
-import { links, Nav } from "./components/Nav"
-import { TrackSketch } from "./components/TrackSketch"
+import { Forecast } from "./components/Forecast"
+import { Market } from "./components/Market"
+import { Team } from "./components/Team"
+import { links } from "./components/Nav"
 
 const idea = [
   { label: "Denumire", value: "„Kart Arena” S.R.L." },
@@ -20,11 +23,11 @@ const idea = [
 const description = [
   {
     label: "Calitatea",
-    value: "Karturi electrice moderne, echipamente de protecție și o pistă amenajată pentru curse sigure.",
+    value: "Karturi CRG din 2024, recondiționate de fabrică, echipamente de protecție și o pistă amenajată pentru curse sigure.",
   },
   {
     label: "Asortimentul",
-    value: "Curse de 8–10 minute, întreceri între prieteni, evenimente de grup și jocuri electronice.",
+    value: "Curse de 8–10 minute, întreceri între prieteni, evenimente de grup și autosim.",
   },
   {
     label: "Destinația",
@@ -36,28 +39,61 @@ const description = [
   },
 ]
 
+const productPhotos = [
+  {
+    src: "section 1/rpm-race-racing-photo-2025-1.webp",
+    alt: "Cursă de karting 2025",
+  },
+  {
+    src: "section 1/423166-1-worlds-largest-indoor-multi-level-karting-track-edison.jpg",
+    alt: "Exteriorul unui centru modern de karting",
+  },
+  {
+    src: "section 1/How-to-design-a-go-kart-track-layout-without-flow-breaking-corners.jpg.webp",
+    alt: "Layout pistă de karting",
+  },
+  {
+    src: "section 1/sim-racing.webp",
+    alt: "Autosim",
+  },
+  {
+    src: "section 1/lounge-zone.jpg.png",
+    alt: "Zona lounge",
+  },
+  {
+    src: "section 1/dsc7293-enhanced-nr-scaled.jpg.webp",
+    alt: "Piloți concurând pe o pistă interioară",
+  },
+  {
+    src: "section 1/K1-Speed-Indoor-Go-Kart-Racing-scaled.jpg",
+    alt: "Karturi în timpul unei curse",
+  },
+  {
+    src: "section 1/SuperleggeroKart-1024x576.jpg",
+    alt: "Pilot echipat într-un kart",
+  },
+]
+
 const steps = [
-  "Clientul rezervă o cursă.",
-  "Primește casca și instrucțiunile de siguranță.",
-  "Intră pe pistă.",
-  "La final își poate vedea timpul obținut.",
+  { title: "Rezervare", text: "Clientul rezervă o cursă." },
+  { title: "Echipare", text: "Primește casca și instrucțiunile de siguranță." },
+  { title: "Pe pistă", text: "Intră pe pistă." },
+  { title: "Rezultat", text: "La final își poate vedea timpul obținut." },
 ]
 
 const swot = [
   {
     title: "Puncte tari",
-    note: "Ce ne ajută",
-    dark: true,
+    note: "Intern · ce ne ajută",
     points: [
-      "Karturi electrice, fără fum.",
+      "Karturi CRG din 2024, recondiționate de fabrică.",
       "Activitate distractivă în orice anotimp.",
       "Posibilitatea de a organiza competiții.",
     ],
   },
   {
     title: "Puncte slabe",
-    note: "Ce ne lipsește",
-    dark: false,
+    note: "Intern · ce ne lipsește",
     points: [
       "Investiție mare la început.",
       "Cheltuieli lunare pentru benzină, salarii și energie.",
@@ -66,18 +102,16 @@ const swot = [
   },
   {
     title: "Oportunități",
-    note: "Ce putem folosi",
-    dark: false,
+    note: "Extern · ce putem folosi",
     points: [
       "Organizarea de evenimente pentru grupuri.",
       "Colaborări cu școli și companii.",
-      "Adăugarea unor jocuri și simulatoare noi.",
+      "Adăugarea unor autosimuri noi.",
     ],
   },
   {
     title: "Riscuri",
-    note: "Ce ne poate afecta",
-    dark: true,
+    note: "Extern · ce ne poate afecta",
     points: [
       "Creșterea costurilor.",
       "Apariția altor centre de karting.",
@@ -86,13 +120,90 @@ const swot = [
   },
 ]
 
-function Specs({ items }: { items: { label: string; value: string }[] }) {
+function PhotoSlider() {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const current = useRef(0)
+  const paused = useRef(false)
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    const scrollTo = (idx: number) => {
+      current.current = idx
+      const card = track.children[idx] as HTMLElement
+      if (!card) return
+      // Scroll only the track strip — never the page
+      const offset = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2
+      track.scrollTo({ left: offset, behavior: "smooth" })
+    }
+
+    const timer = setInterval(() => {
+      if (!paused.current) {
+        scrollTo((current.current + 1) % productPhotos.length)
+      }
+    }, 3000)
+
+    let resumeTimer: ReturnType<typeof setTimeout>
+    const onInteract = () => {
+      paused.current = true
+      clearTimeout(resumeTimer)
+      resumeTimer = setTimeout(() => { paused.current = false }, 6000)
+    }
+
+    track.addEventListener("pointerdown", onInteract, { passive: true })
+    track.addEventListener("wheel", onInteract, { passive: true })
+
+    return () => {
+      clearInterval(timer)
+      clearTimeout(resumeTimer)
+      track.removeEventListener("pointerdown", onInteract)
+      track.removeEventListener("wheel", onInteract)
+    }
+  }, [])
+
   return (
-    <dl className="mx-auto mt-14 max-w-[820px]">
+    <div className="-mx-6 mt-14">
+      <div
+        ref={trackRef}
+        role="list"
+        aria-label="Galerie Kart Arena"
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[7vw] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {productPhotos.map((photo, i) => (
+          <figure
+            key={photo.src}
+            role="listitem"
+            className="w-[86vw] shrink-0 snap-center overflow-hidden rounded-xl bg-[#111]"
+          >
+            <img
+              src={`${import.meta.env.BASE_URL}${encodeURI(photo.src)}`}
+              alt={photo.alt}
+              loading={i === 0 ? "eager" : "lazy"}
+              className="h-[65vh] w-full object-cover"
+            />
+          </figure>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Specs({
+  items,
+  compact = false,
+}: {
+  items: { label: string; value: string }[]
+  compact?: boolean
+}) {
+  return (
+    <dl className={`mx-auto ${compact ? "mt-10 max-w-[1040px] lg:mt-8" : "mt-14 max-w-[820px]"}`}>
       {items.map((item) => (
         <div
           key={item.label}
-          className="grid gap-1 border-t border-black/10 py-6 sm:grid-cols-[180px_1fr] sm:gap-8"
+          className={`grid gap-1 border-t border-black/10 sm:grid-cols-[180px_1fr] sm:gap-8 ${
+            compact ? "py-5 lg:py-3.5" : "py-6"
+          }`}
         >
           <dt className="text-[14px] text-muted">{item.label}</dt>
           <dd className="text-[19px] leading-snug tracking-tight text-ink">{item.value}</dd>
@@ -111,15 +222,18 @@ export default function App() {
       >
         Sari la conținut
       </a>
-      <Nav />
       <main id="continut">
         <section
           id="top"
           className="relative flex min-h-[100svh] scroll-mt-14 flex-col items-center justify-center overflow-hidden bg-black px-6 text-center text-white"
         >
-          <img
-            src={`${import.meta.env.BASE_URL}Modern Indoor Go-Kart Arena.png`}
-            alt=""
+          <video
+            src={`${import.meta.env.BASE_URL}${encodeURI("TKI Torino Kart Indoor Training Session Cinematic 4K.mp4")}`}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/80" />
@@ -128,7 +242,7 @@ export default function App() {
               Kart Arena S.R.L.
             </h1>
             <p className="mx-auto mt-5 max-w-[640px] text-[19px] leading-snug text-[#d2d2d7] sm:text-[24px]">
-              O pistă de curse și o zonă de relaxare. Chișinău, sectorul Botanica.
+              O pistă de curse și o zonă de relaxare. Chișinău
             </p>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[19px]">
               <a href="#ideea" className="text-link-on-dark hover:underline">
@@ -147,7 +261,7 @@ export default function App() {
               Ideea de afacere
             </h2>
             <p className="mt-6 text-[19px] leading-relaxed text-ink sm:text-[21px]">
-              Deschiderea unui centru de karting electric în interior, Kart Arena, cu o pistă de curse
+              Deschiderea unui centru de karting în interior, Kart Arena, cu o pistă de curse
               și o zonă de relaxare.
             </p>
           </div>
@@ -160,45 +274,39 @@ export default function App() {
         </section>
 
         <section id="serviciu" className="scroll-mt-14 bg-black px-6 py-24 text-center text-white sm:py-32">
-          <p className="text-[14px] text-[#86868b]">Prezentarea produsului / serviciului</p>
+          <p className="text-[14px] text-[#86868b]">Prezentarea serviciului</p>
           <h2 className="mx-auto mt-3 max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight sm:text-[56px]">
-            Curse de karting electric în interior, jocuri electronice și zonă de relaxare.
+            Curse de karting în interior, autosim și zonă de relaxare.
           </h2>
-          <div className="mx-auto mt-14 max-w-[1100px]">
-            <TrackSketch />
-          </div>
-          <p className="mx-auto mt-8 max-w-[640px] text-[15px] leading-relaxed text-[#86868b]">
-            O pistă de karting în interior, cu bariere de protecție, karturi electrice și un ecran
-            care arată rezultatele curselor.
-          </p>
+          <PhotoSlider />
         </section>
 
-        <section id="descriere" className="scroll-mt-14 bg-white px-6 py-24 sm:py-32">
+        <section
+          id="descriere"
+          className="flex scroll-mt-14 flex-col justify-center bg-white px-6 py-24 sm:py-32 lg:min-h-svh lg:pt-20 lg:pb-12"
+        >
           <h2 className="text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
             Descrierea produsului
           </h2>
-          <Specs items={description} />
-          <div className="mx-auto mt-8 max-w-[820px] border-t border-black/10 pt-10">
-            <h3 className="text-[14px] text-muted">Procesul tehnologic</h3>
-            <p className="mt-3 max-w-[640px] text-[19px] leading-snug text-ink">
-              Clientul rezervă o cursă, primește casca și instrucțiunile de siguranță, apoi intră
-              pe pistă. La final își poate vedea timpul obținut.
-            </p>
-            <ol className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <Specs items={description} compact />
+          <div className="mx-auto mt-8 w-full max-w-[1040px] border-t border-black/10 pt-10 lg:mt-4 lg:pt-8">
+            <p className="text-[14px] text-muted">Procesul tehnologic</p>
+            <h3 className="mt-2 text-[28px] font-semibold tracking-tight text-ink sm:text-[32px]">
+              Cum decurge o vizită
+            </h3>
+            <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:mt-6 lg:grid-cols-4">
               {steps.map((step, index) => (
-                <li key={step}>
-                  <span className="text-[13px] text-muted">0{index + 1}</span>
-                  <p className="mt-2 text-[17px] leading-snug text-ink">{step}</p>
+                <li key={step.title} className="rounded-[28px] bg-canvas px-8 py-8">
+                  <span className="text-[14px] text-muted">0{index + 1}</span>
+                  <h4 className="mt-2 text-[22px] font-semibold tracking-tight text-ink">{step.title}</h4>
+                  <p className="mt-3 text-[17px] leading-relaxed text-ink">{step.text}</p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <FleetCost />
-        <Finance />
-
-        <section id="localitate" className="scroll-mt-14 bg-white px-6 py-24 text-center sm:py-36">
+        <section id="localitate" className="scroll-mt-14 bg-canvas px-6 py-24 text-center sm:py-36">
           <h2 className="mx-auto max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
             De ce ideea este bună pentru localitate
           </h2>
@@ -208,31 +316,32 @@ export default function App() {
           </p>
         </section>
 
-        <section id="swot" className="scroll-mt-14 bg-[#e8e8ed] px-3 pt-20 pb-3 sm:pt-28">
-          <h2 className="px-4 pb-12 text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
-            Analiza afacerii
-          </h2>
-          <div className="grid gap-3 md:grid-cols-2">
-            {swot.map((block) => (
-              <article
-                key={block.title}
-                className={`min-h-[320px] rounded-[28px] px-8 py-12 sm:px-12 ${
-                  block.dark ? "bg-black text-white" : "bg-white text-ink"
-                }`}
-              >
-                <h3 className="text-[32px] font-semibold tracking-tight">{block.title}</h3>
-                <p className={`mt-1 text-[14px] ${block.dark ? "text-[#86868b]" : "text-muted"}`}>
-                  {block.note}
-                </p>
-                <ul className="mt-8 space-y-3 text-[17px] leading-snug">
-                  {block.points.map((point) => (
-                    <li key={point}>{point}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+        <section id="swot" className="scroll-mt-14 bg-white px-6 py-24 sm:py-32">
+          <div className="mx-auto max-w-[1100px]">
+            <p className="text-center text-[14px] text-muted">Analiza SWOT</p>
+            <h2 className="mx-auto mt-3 max-w-[860px] text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
+              Analiza afacerii
+            </h2>
+            <div className="mt-14 grid gap-3 md:grid-cols-2">
+              {swot.map((block) => (
+                <article key={block.title} className="rounded-[28px] bg-canvas px-8 py-10 sm:px-12">
+                  <p className="text-[14px] text-muted">{block.note}</p>
+                  <h3 className="mt-1 text-[28px] font-semibold tracking-tight text-ink">{block.title}</h3>
+                  <ul className="mt-6 space-y-3 text-[17px] leading-snug text-ink">
+                    {block.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
+        <Team />
+        <FleetCost />
+        <Finance />
+        <Forecast />
+        <Market />
       </main>
 
       <footer className="bg-black px-6 pt-20 pb-10 text-white">
@@ -240,7 +349,7 @@ export default function App() {
           <div className="flex flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[32px] font-semibold tracking-tight">Kart Arena</p>
-              <p className="mt-2 text-[17px] text-[#86868b]">Chișinău, sectorul Botanica</p>
+              <p className="mt-2 text-[17px] text-[#86868b]">Chișinău</p>
             </div>
             <ul className="flex flex-wrap gap-x-6 gap-y-3 text-[14px]">
               {links.map((link) => (

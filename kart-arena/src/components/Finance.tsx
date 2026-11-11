@@ -1,8 +1,9 @@
-import { capitalPornire, KARTURI_LA_PORNIRE } from "./FleetCost"
+import { Calc } from "./Calc"
+import { capital, capitalTotal, DOBANDA_CREDIT, imprumut, proprii, propriiProcent } from "./plan"
+import { MoneyTable } from "./MoneyTable"
 
 const lei = new Intl.NumberFormat("ro-RO", { maximumFractionDigits: 0 })
 
-const CAPITAL = capitalPornire(KARTURI_LA_PORNIRE)
 const EXEMPLU = 500_000
 const DOBANDA_AN = 6
 const ZILE = 30
@@ -44,10 +45,23 @@ export function Finance() {
           Capitalul de care avem nevoie
         </h2>
         <p className="mx-auto mt-6 max-w-[720px] text-center text-[19px] leading-relaxed text-ink">
-          Pentru 6 karturi, terenul, hala și ce trebuie ca pista să pornească, capitalul este{" "}
-          <span className="font-semibold">{lei.format(CAPITAL)} lei</span>. Suma se schimbă în
-          calculul de mai sus dacă luăm mai puține karturi. Nu punem aici zona de relaxare.
+          Pentru 6 karturi, terenul, hala, autosimul, mobilierul și prima lună de lucru, capitalul
+          este <span className="font-semibold">{lei.format(capitalTotal)} lei</span>.
         </p>
+
+        <div className="mx-auto mt-16 max-w-[820px]">
+          <h3 className="text-[28px] font-semibold tracking-tight text-ink">Capitalul necesar pentru inițiere</h3>
+          <Calc label="Total capital necesar" value={`${lei.format(capitalTotal)} lei`} tone="canvas" className="mt-6">
+          <MoneyTable
+            head={["Nr.", "Cheltuieli", "Suma totală, lei"]}
+            rows={capital.map((row, index) => ({
+              cells: [`${index + 1}.`, row.title, lei.format(row.amount)],
+              details: row.items.map((item) => [item.label, lei.format(item.amount)]),
+            }))}
+            total={["Total capital necesar", lei.format(capitalTotal)]}
+          />
+          </Calc>
+        </div>
 
         <div className="mx-auto mt-16 max-w-[820px]">
           <h3 className="text-[28px] font-semibold tracking-tight text-ink">
@@ -84,9 +98,38 @@ export function Finance() {
           ))}
         </div>
 
-        <div className="mx-auto mt-16 max-w-[820px] border-t border-black/10 pt-10">
-          <h3 className="text-[28px] font-semibold tracking-tight text-ink">Cum se calculează dobânda</h3>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink">
+        <div className="mx-auto mt-16 max-w-[820px]">
+          <h3 className="text-[28px] font-semibold tracking-tight text-ink">Sursele de finanțare</h3>
+          <MoneyTable
+            className="mt-6"
+            head={["", "Surse de finanțare", "Suma, lei", "Ponderea, %"]}
+            rows={[
+              { cells: ["1.", "Mijloace bănești proprii: economiile fondatorilor", lei.format(proprii), `${propriiProcent}%`] },
+              {
+                cells: [
+                  "2.",
+                  `Mijloace împrumutate: credit Microinvest, ${DOBANDA_CREDIT.toString().replace(".", ",")}% pe an`,
+                  lei.format(imprumut),
+                  `${100 - propriiProcent}%`,
+                ],
+              },
+            ]}
+            total={["Total necesar de capital", lei.format(capitalTotal), "100%"]}
+          />
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            Am luat cea mai mică dobândă fixă anunțată de Microinvest, pentru că o firmă nouă nu are
+            încă istoric pentru o bancă sau pentru programul de stat.
+          </p>
+        </div>
+
+        <Calc
+          label="Cum se calculează dobânda"
+          value={`${lei.format(dobandaLuna)} lei pe lună`}
+          note={`exemplu pentru ${lei.format(EXEMPLU)} lei la ${DOBANDA_AN}%`}
+          tone="canvas"
+          className="mx-auto mt-3 max-w-[820px]"
+        >
+          <p className="text-[17px] leading-relaxed text-ink">
             Creditul are două părți: suma împrumutată și dobânda. Dobânda poate fi fixă sau poate fi
             schimbată de bancă. Pe lângă ea se plătesc comisioane, iar întârzierea aduce penalități.
             Pentru o lună, dobânda este suma înmulțită cu rata anuală și cu zilele lunii, împărțită
@@ -97,7 +140,7 @@ export function Finance() {
             {ZILE} de zile: dobânda lunii este {lei.format(dobandaLuna)} lei. La Microinvest, aceeași
             sumă ar costa de câteva ori mai mult, pentru că rata trece de 24% pe an.
           </p>
-        </div>
+        </Calc>
 
         <div className="mx-auto mt-16 grid max-w-[1100px] gap-3 md:grid-cols-2">
           <article className="rounded-[28px] bg-black px-8 py-10 text-white">

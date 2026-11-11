@@ -39,3 +39,61 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Organigrama: liniile dintre căsuțe */
+.org ul {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+}
+.org > ul {
+  padding-top: 0;
+}
+.org li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 6px 0;
+}
+.org > ul > li {
+  padding-top: 0;
+}
+.org li::before,
+.org li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 50%;
+  width: 50%;
+  height: 24px;
+  border-top: 1px solid rgb(0 0 0 / 0.2);
+}
+.org li::after {
+  right: auto;
+  left: 50%;
+  border-left: 1px solid rgb(0 0 0 / 0.2);
+}
+.org li:only-child::before,
+.org li:only-child::after {
+  display: none;
+}
+.org li:only-child {
+  padding-top: 0;
+}
+.org li:first-child::before,
+.org li:last-child::after {
+  border: 0 none;
+}
+.org li:last-child::before {
+  border-right: 1px solid rgb(0 0 0 / 0.2);
+}
+.org ul ul::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 24px;
+  border-left: 1px solid rgb(0 0 0 / 0.2);
+}
