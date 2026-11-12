@@ -1,10 +1,12 @@
 import { Calc } from "./Calc"
 import { MoneyTable } from "./MoneyTable"
+import { SplitBar } from "./SplitBar"
 import {
   capitalTotal,
   cheltuieli,
   cheltuieliAn,
   cheltuieliLuna,
+  cheltuieliPeGrupuri,
   IMPOZIT_PROFIT,
   impozitAn,
   profitAn,
@@ -22,22 +24,18 @@ export function Forecast() {
   const ani = capitalTotal / profitNetAn
 
   return (
-    <section id="prognoza" className="scroll-mt-14 bg-canvas px-6 py-24 sm:py-32">
+    <section id="prognoza" className="scroll-mt-14 px-6 py-24 sm:py-32">
       <div className="mx-auto max-w-[1100px]">
-        <p className="text-center text-[14px] text-muted">Primul an de activitate</p>
+        <p className="text-center text-[16px] font-medium text-link">Primul an de activitate</p>
         <h2 className="mx-auto mt-3 max-w-[860px] text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
           Prognoza și profitul
         </h2>
-        <p className="mx-auto mt-6 max-w-[680px] text-center text-[19px] leading-relaxed text-ink">
-          Socotim o lună obișnuită și o înmulțim cu 12. O cursă de 10 minute costă 300 de lei.
-        </p>
 
         <Calc
           label="Prognoza cheltuielilor, pe an"
-          value={`${numar.format(cheltuieliAn)} lei`}
-          note={`${numar.format(cheltuieliLuna)} lei pe lună`}
           className="mx-auto mt-16 max-w-[820px]"
         >
+          <SplitBar items={cheltuieliPeGrupuri} className="mb-10" />
           <MoneyTable
             head={["Nr.", "Cheltuieli", "Lunare, lei", "Anuale, lei"]}
             rows={cheltuieli.map((row, i) => ({
@@ -49,10 +47,9 @@ export function Forecast() {
 
         <Calc
           label="Prognoza veniturilor, pe an"
-          value={`${numar.format(venitAn)} lei`}
-          note={`${numar.format(venitLuna)} lei pe lună`}
-          className="mx-auto mt-3 max-w-[820px]"
+          className="mx-auto mt-16 max-w-[820px]"
         >
+          <SplitBar items={venituri.map((row) => ({ label: row.scurt, value: row.venitLunar }))} className="mb-10" />
           <MoneyTable
             head={["Nr.", "Produsul / serviciul", "Lunar", "Anual"]}
             rows={venituri.map((row, i) => ({
@@ -64,39 +61,38 @@ export function Forecast() {
             }))}
             total={["Total venit din vânzări", `${numar.format(venitLuna)} lei`, `${numar.format(venitAn)} lei`]}
           />
-          <p className="mt-4 text-[15px] leading-relaxed text-muted">
-            600 de curse pe lună înseamnă în medie 27 de curse pe zi, din cele 4 ore de pistă. Evenimentul
-            de grup costă mai puțin decât 8 curse separate, ca să fie o ofertă bună pentru grupuri.
-          </p>
         </Calc>
 
         <h3 className="mx-auto mt-24 max-w-[860px] text-center text-[28px] font-semibold tracking-tight text-ink sm:text-[32px]">
           Rezultatul financiar
         </h3>
-        <div className="mx-auto mt-8 max-w-[1100px] rounded-[28px] bg-black px-8 py-12 text-white sm:px-12">
-          <div className="grid gap-8 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-end">
-            <Figure label="Venituri" value={venitAn} />
-            <span className="hidden pb-2 text-[40px] text-[#86868b] md:block">−</span>
-            <Figure label="Cheltuieli" value={cheltuieliAn} />
-            <span className="hidden pb-2 text-[40px] text-[#86868b] md:block">=</span>
-            <Figure label={profitAn >= 0 ? "Profit" : "Pierdere"} value={profitAn} accent />
-          </div>
-          <dl className="mt-12 border-t border-white/15">
-            {[
-              ["Profit pe lună", `${numar.format(profitLuna)} lei`],
-              [`Impozit pe venit, ${IMPOZIT_PROFIT}%`, `${numar.format(impozitAn)} lei`],
-              ["Profit net în primul an", `${numar.format(profitNetAn)} lei`],
-              ["Capitalul se întoarce în", `aproximativ ${unZecimal.format(ani)} ani`],
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-baseline justify-between gap-6 border-b border-white/15 py-4">
-                <dt className="text-[17px] text-[#d2d2d7]">{label}</dt>
-                <dd className="text-[19px] font-semibold tracking-tight">{value}</dd>
-              </div>
-            ))}
+        <div className="mx-auto mt-8 max-w-[820px]">
+          <dl className="text-ink">
+            <Row label="Venituri" value={venitAn} />
+            <Row label="Cheltuieli" value={-cheltuieliAn} />
+            <Row label={profitAn >= 0 ? "Profit" : "Pierdere"} value={profitAn} total />
+            <Row label={`Impozit pe venit, ${IMPOZIT_PROFIT}%`} value={-impozitAn} />
+            <Row label="Profit net în primul an" value={profitNetAn} total accent />
           </dl>
-          <p className="mt-6 text-[15px] leading-relaxed text-[#86868b]">
-            Afacerea este profitabilă din primul an. Rata creditului nu este o cheltuială, se plătește
-            din profit; în cheltuieli intră doar dobânda.
+
+          <div className="mt-10 grid gap-3 sm:grid-cols-2">
+            <div className="glass rounded-[28px] px-8 py-7">
+              <p className="text-[16px] text-muted">Profit pe lună</p>
+              <p className="mt-1 text-[32px] font-semibold tracking-tight text-ink">
+                {numar.format(profitLuna)} lei
+              </p>
+            </div>
+            <div className="glass rounded-[28px] px-8 py-7">
+              <p className="text-[16px] text-muted">Capitalul se întoarce în</p>
+              <p className="mt-1 text-[32px] font-semibold tracking-tight text-ink">
+                ~{unZecimal.format(ani)} ani
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-6 text-[17px] leading-relaxed text-muted">
+            Afacerea este profitabilă din primul an, chiar și după ce plătim toată rata creditului,
+            cu dobândă cu tot.
           </p>
         </div>
       </div>
@@ -104,17 +100,33 @@ export function Forecast() {
   )
 }
 
-function Figure({ label, value, accent = false }: { label: string; value: number; accent?: boolean }) {
+/* Un rând din calcul: sumele scăzute apar cu minus, iar totalurile au o linie groasă deasupra. */
+function Row({
+  label,
+  value,
+  total = false,
+  accent = false,
+}: {
+  label: string
+  value: number
+  total?: boolean
+  accent?: boolean
+}) {
   return (
-    <div>
-      <p className="text-[14px] text-[#86868b]">{label}, lei pe an</p>
-      <p
-        className={`mt-1 text-[32px] font-semibold tracking-tight sm:text-[40px] ${
-          accent ? "text-link-on-dark" : ""
-        }`}
+    <div
+      className={`flex items-baseline justify-between gap-6 ${
+        total ? "border-t-2 border-ink py-5" : "border-t border-black/10 py-4"
+      }`}
+    >
+      <dt className={total ? "text-[19px] font-semibold tracking-tight" : "text-[17px] text-muted"}>{label}</dt>
+      <dd
+        className={`font-semibold tracking-tight whitespace-nowrap ${
+          total ? "text-[28px] sm:text-[32px]" : "text-[19px]"
+        } ${accent ? "text-[#1a7f37]" : ""}`}
       >
-        {numar.format(value)}
-      </p>
+        {value < 0 ? "−" : ""}
+        {numar.format(Math.abs(value))} lei
+      </dd>
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { FleetCost } from "./components/FleetCost"
 import { Forecast } from "./components/Forecast"
 import { Market } from "./components/Market"
 import { Team } from "./components/Team"
-import { links } from "./components/Nav"
 
 const idea = [
   { label: "Denumire", value: "„Kart Arena” S.R.L." },
@@ -81,10 +80,25 @@ const steps = [
   { title: "Rezultat", text: "La final își poate vedea timpul obținut." },
 ]
 
+const localReasons = [
+  {
+    title: "Ceva nou pentru tineri",
+    text: "Mulți tineri din oraș caută activități noi, iar kartingul în interior le oferă adrenalină în siguranță.",
+  },
+  {
+    title: "În orice anotimp",
+    text: "Pista este în interior, așa că ploaia, frigul sau căldura nu opresc cursele.",
+  },
+  {
+    title: "Un loc pentru grupuri",
+    text: "Prietenii, colegii și școlile pot organiza aici întreceri, zile de naștere și evenimente.",
+  },
+]
+
 const swot = [
   {
     title: "Puncte tari",
-    note: "Intern · ce ne ajută",
+    letter: "S",
     points: [
       "Karturi CRG din 2024, recondiționate de fabrică.",
       "Activitate distractivă în orice anotimp.",
@@ -93,7 +107,7 @@ const swot = [
   },
   {
     title: "Puncte slabe",
-    note: "Intern · ce ne lipsește",
+    letter: "W",
     points: [
       "Investiție mare la început.",
       "Cheltuieli lunare pentru benzină, salarii și energie.",
@@ -102,7 +116,7 @@ const swot = [
   },
   {
     title: "Oportunități",
-    note: "Extern · ce putem folosi",
+    letter: "O",
     points: [
       "Organizarea de evenimente pentru grupuri.",
       "Colaborări cu școli și companii.",
@@ -111,7 +125,7 @@ const swot = [
   },
   {
     title: "Riscuri",
-    note: "Extern · ce ne poate afecta",
+    letter: "T",
     points: [
       "Creșterea costurilor.",
       "Apariția altor centre de karting.",
@@ -138,11 +152,28 @@ function PhotoSlider() {
       track.scrollTo({ left: offset, behavior: "smooth" })
     }
 
-    const timer = setInterval(() => {
-      if (!paused.current) {
-        scrollTo((current.current + 1) % productPhotos.length)
-      }
-    }, 3000)
+    // Pornește doar când galeria este vizibilă în întregime; se oprește când iese din ecran.
+    let timer: ReturnType<typeof setInterval> | undefined
+    const start = () => {
+      if (timer) return
+      timer = setInterval(() => {
+        if (!paused.current) scrollTo((current.current + 1) % productPhotos.length)
+      }, 3000)
+    }
+    const stop = () => {
+      clearInterval(timer)
+      timer = undefined
+    }
+    const check = () => {
+      const rect = track.getBoundingClientRect()
+      const fully = rect.top >= -2 && rect.bottom <= window.innerHeight + 2
+      const gone = rect.bottom <= 0 || rect.top >= window.innerHeight
+      if (fully) start()
+      else if (gone) stop()
+    }
+    check()
+    window.addEventListener("scroll", check, { passive: true })
+    window.addEventListener("resize", check)
 
     let resumeTimer: ReturnType<typeof setTimeout>
     const onInteract = () => {
@@ -150,15 +181,41 @@ function PhotoSlider() {
       clearTimeout(resumeTimer)
       resumeTimer = setTimeout(() => { paused.current = false }, 6000)
     }
+    // Doar derularea orizontală a galeriei o oprește, nu derularea paginii.
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) onInteract()
+    }
 
-    track.addEventListener("pointerdown", onInteract, { passive: true })
-    track.addEventListener("wheel", onInteract, { passive: true })
+    // Pe telefon: doar o glisare orizontală oprește galeria, nu derularea paginii.
+    let touchX = 0
+    let touchY = 0
+    const onTouchStart = (e: TouchEvent) => {
+      touchX = e.touches[0].clientX
+      touchY = e.touches[0].clientY
+    }
+    const onTouchMove = (e: TouchEvent) => {
+      const dx = Math.abs(e.touches[0].clientX - touchX)
+      const dy = Math.abs(e.touches[0].clientY - touchY)
+      if (dx > dy && dx > 8) onInteract()
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") onInteract()
+    }
+
+    track.addEventListener("pointerdown", onPointerDown, { passive: true })
+    track.addEventListener("touchstart", onTouchStart, { passive: true })
+    track.addEventListener("touchmove", onTouchMove, { passive: true })
+    track.addEventListener("wheel", onWheel, { passive: true })
 
     return () => {
-      clearInterval(timer)
+      stop()
       clearTimeout(resumeTimer)
-      track.removeEventListener("pointerdown", onInteract)
-      track.removeEventListener("wheel", onInteract)
+      window.removeEventListener("scroll", check)
+      window.removeEventListener("resize", check)
+      track.removeEventListener("pointerdown", onPointerDown)
+      track.removeEventListener("touchstart", onTouchStart)
+      track.removeEventListener("touchmove", onTouchMove)
+      track.removeEventListener("wheel", onWheel)
     }
   }, [])
 
@@ -174,7 +231,7 @@ function PhotoSlider() {
           <figure
             key={photo.src}
             role="listitem"
-            className="w-[86vw] shrink-0 snap-center overflow-hidden rounded-xl bg-[#111]"
+            className="w-[86vw] shrink-0 snap-center overflow-hidden rounded-[32px] bg-[#111] ring-1 ring-white/15 shadow-[0_20px_60px_-20px_rgb(0_0_0/0.8)]"
           >
             <img
               src={`${import.meta.env.BASE_URL}${encodeURI(photo.src)}`}
@@ -201,11 +258,11 @@ function Specs({
       {items.map((item) => (
         <div
           key={item.label}
-          className={`grid gap-1 border-t border-black/10 sm:grid-cols-[180px_1fr] sm:gap-8 ${
+          className={`grid gap-1 border-t border-black/[0.08] sm:grid-cols-[180px_1fr] sm:gap-8 ${
             compact ? "py-5 lg:py-3.5" : "py-6"
           }`}
         >
-          <dt className="text-[14px] text-muted">{item.label}</dt>
+          <dt className="text-[16px] text-muted">{item.label}</dt>
           <dd className="text-[19px] leading-snug tracking-tight text-ink">{item.value}</dd>
         </div>
       ))}
@@ -218,7 +275,7 @@ export default function App() {
     <>
       <a
         href="#continut"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-white/80 focus:backdrop-blur-xl focus:px-4 focus:py-2"
       >
         Sari la conținut
       </a>
@@ -241,8 +298,8 @@ export default function App() {
             <h1 className="max-w-[920px] text-[56px] leading-none font-semibold tracking-[-0.03em] sm:text-[80px] lg:text-[96px]">
               Kart Arena S.R.L.
             </h1>
-            <p className="mx-auto mt-5 max-w-[640px] text-[19px] leading-snug text-[#d2d2d7] sm:text-[24px]">
-              O pistă de curse și o zonă de relaxare. Chișinău
+            <p className="mx-auto mt-5 max-w-[760px] text-[19px] leading-snug text-[#d2d2d7] sm:text-[24px]">
+              Centru de karting în interior, în Chișinău: curse cu karturi, autosim și zonă de relaxare, pentru prieteni, familii și evenimente de grup.
             </p>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[19px]">
               <a href="#ideea" className="text-link-on-dark hover:underline">
@@ -255,7 +312,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="ideea" className="scroll-mt-14 bg-canvas px-6 py-24 sm:py-32">
+        <section id="ideea" className="scroll-mt-14 px-6 py-24 sm:py-32">
           <div className="mx-auto max-w-[820px] text-center">
             <h2 className="text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
               Ideea de afacere
@@ -274,7 +331,7 @@ export default function App() {
         </section>
 
         <section id="serviciu" className="scroll-mt-14 bg-black px-6 py-24 text-center text-white sm:py-32">
-          <p className="text-[14px] text-[#86868b]">Prezentarea serviciului</p>
+          <p className="text-[16px] font-medium text-link-on-dark">Prezentarea serviciului</p>
           <h2 className="mx-auto mt-3 max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight sm:text-[56px]">
             Curse de karting în interior, autosim și zonă de relaxare.
           </h2>
@@ -283,57 +340,93 @@ export default function App() {
 
         <section
           id="descriere"
-          className="flex scroll-mt-14 flex-col justify-center bg-white px-6 py-24 sm:py-32 lg:min-h-svh lg:pt-20 lg:pb-12"
+          className="flex scroll-mt-14 flex-col justify-center px-6 py-24 sm:py-32 lg:min-h-svh lg:pt-20 lg:pb-12"
         >
           <h2 className="text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
             Descrierea produsului
           </h2>
           <Specs items={description} compact />
           <div className="mx-auto mt-8 w-full max-w-[1040px] border-t border-black/10 pt-10 lg:mt-4 lg:pt-8">
-            <p className="text-[14px] text-muted">Procesul tehnologic</p>
+            <p className="text-[16px] font-medium text-link">Procesul tehnologic</p>
             <h3 className="mt-2 text-[28px] font-semibold tracking-tight text-ink sm:text-[32px]">
               Cum decurge o vizită
             </h3>
-            <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:mt-6 lg:grid-cols-4">
+<ol className="relative mt-10 grid gap-8 lg:mt-8 lg:grid-cols-4 lg:gap-6">
+              {/* linia traseului care leagă pașii */}
+              <span
+                aria-hidden="true"
+                className="absolute top-2 bottom-2 left-[19px] w-px bg-black/10 lg:top-[19px] lg:right-[calc(25%-38px)] lg:bottom-auto lg:left-[20px] lg:h-px lg:w-auto"
+              />
               {steps.map((step, index) => (
-                <li key={step.title} className="rounded-[28px] bg-canvas px-8 py-8">
-                  <span className="text-[14px] text-muted">0{index + 1}</span>
-                  <h4 className="mt-2 text-[22px] font-semibold tracking-tight text-ink">{step.title}</h4>
-                  <p className="mt-3 text-[17px] leading-relaxed text-ink">{step.text}</p>
+                <li key={step.title} className="relative flex gap-5 lg:flex-col lg:gap-0">
+                  <span className="glass flex size-10 shrink-0 items-center justify-center rounded-full text-[15px] font-semibold text-link">
+                    {index + 1}
+                  </span>
+                  <div className="lg:mt-5">
+                    <h4 className="text-[22px] font-semibold tracking-tight text-ink">{step.title}</h4>
+                    <p className="mt-2 text-[17px] leading-relaxed text-muted">{step.text}</p>
+                  </div>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <section id="localitate" className="scroll-mt-14 bg-canvas px-6 py-24 text-center sm:py-36">
-          <h2 className="mx-auto max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
-            De ce ideea este bună pentru localitate
-          </h2>
-          <p className="mx-auto mt-8 max-w-[680px] text-[21px] leading-snug text-ink sm:text-[28px]">
-            În Chișinău sunt mulți tineri care caută activități noi. Un centru de karting în interior ar
-            fi o opțiune de distracție în orice anotimp.
-          </p>
+        <section id="localitate" className="scroll-mt-14 px-6 py-24 sm:py-32">
+          <div className="mx-auto max-w-[1100px]">
+            <h2 className="mx-auto max-w-[860px] text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
+              De ce ideea este bună pentru localitate
+            </h2>
+            <ul className="mt-14 grid gap-3 md:grid-cols-3">
+              {localReasons.map((reason, i) => (
+                <li key={reason.title} className="glass rounded-[28px] px-8 py-8">
+                  <span className="text-[16px] font-medium text-link">0{i + 1}</span>
+                  <h3 className="mt-2 text-[22px] font-semibold tracking-tight text-ink">{reason.title}</h3>
+                  <p className="mt-3 text-[17px] leading-relaxed text-ink">{reason.text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
 
-        <section id="swot" className="scroll-mt-14 bg-white px-6 py-24 sm:py-32">
+        <section id="swot" className="scroll-mt-14 px-6 py-24 sm:py-32">
           <div className="mx-auto max-w-[1100px]">
-            <p className="text-center text-[14px] text-muted">Analiza SWOT</p>
+            <p className="text-center text-[16px] font-medium text-link">Analiza SWOT</p>
             <h2 className="mx-auto mt-3 max-w-[860px] text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
               Analiza afacerii
             </h2>
-            <div className="mt-14 grid gap-3 md:grid-cols-2">
-              {swot.map((block) => (
-                <article key={block.title} className="rounded-[28px] bg-canvas px-8 py-10 sm:px-12">
-                  <p className="text-[14px] text-muted">{block.note}</p>
-                  <h3 className="mt-1 text-[28px] font-semibold tracking-tight text-ink">{block.title}</h3>
-                  <ul className="mt-6 space-y-3 text-[17px] leading-snug text-ink">
-                    {block.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
+            <div className="mt-14">
+              <div className="glass grid overflow-hidden rounded-[28px] md:grid-cols-2">
+                {swot.map((block, i) => (
+                  <article
+                    key={block.title}
+                    className={`relative px-8 py-10 sm:px-10 ${i > 0 ? "border-t border-black/[0.08]" : ""} ${
+                      i === 1 ? "md:border-t-0 md:border-l" : ""
+                    } ${i === 3 ? "md:border-l" : ""}`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`absolute top-6 right-8 text-[64px] leading-none font-semibold tracking-tight ${
+                        i % 2 === 0 ? "text-ink/[0.07]" : "text-link/15"
+                      }`}
+                    >
+                      {block.letter}
+                    </span>
+                    <h3 className="text-[24px] font-semibold tracking-tight text-ink">{block.title}</h3>
+                    <ul className="mt-5 space-y-3 text-[17px] leading-snug text-ink">
+                      {block.points.map((point) => (
+                        <li key={point} className="flex gap-3">
+                          <span
+                            aria-hidden="true"
+                            className={`mt-[9px] size-1.5 shrink-0 rounded-full ${i % 2 === 0 ? "bg-ink" : "bg-link"}`}
+                          />
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -343,29 +436,6 @@ export default function App() {
         <Forecast />
         <Market />
       </main>
-
-      <footer className="bg-black px-6 pt-20 pb-10 text-white">
-        <div className="mx-auto max-w-[1100px]">
-          <div className="flex flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-[32px] font-semibold tracking-tight">Kart Arena</p>
-              <p className="mt-2 text-[17px] text-[#86868b]">Chișinău</p>
-            </div>
-            <ul className="flex flex-wrap gap-x-6 gap-y-3 text-[14px]">
-              {links.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} className="text-[#d2d2d7] hover:text-white">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <p className="mt-14 border-t border-white/15 pt-6 text-[12px] text-[#86868b]">
-            „Kart Arena” S.R.L. · Fondatori: Borș Bogdan și Covali Alexandru
-          </p>
-        </div>
-      </footer>
     </>
   )
 }

@@ -38,15 +38,15 @@ export function Nav() {
   }, [lastScrollY]);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/90 text-white backdrop-blur-2xl transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'}`}>
+    <header className={`fixed inset-x-0 top-3 z-50 px-3 text-white transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${showNavbar ? 'translate-y-0' : '-translate-y-[150%]'}`}>
       <nav
         aria-label="Secțiuni"
-        className="mx-auto flex h-14 max-w-[1100px] items-center justify-between gap-4 px-4 sm:px-5"
+        className="glass-dark mx-auto flex h-14 max-w-[1100px] items-center justify-between gap-4 rounded-full px-5 sm:px-7"
       >
         <a href="#top" className="shrink-0 text-lg font-semibold tracking-tight">
           Kart Arena
         </a>
-        <ul className="flex min-w-0 items-center gap-4 overflow-x-auto text-[15px] whitespace-nowrap [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden">
+        <ul className="flex min-w-0 items-center gap-4 overflow-x-auto text-[17px] whitespace-nowrap [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden">
           {links.map((link) => (
             <li key={link.href}>
               <a

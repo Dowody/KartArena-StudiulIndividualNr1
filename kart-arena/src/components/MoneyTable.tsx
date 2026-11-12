@@ -17,7 +17,7 @@ export function MoneyTable({
     <div className={`overflow-x-auto ${className}`}>
       <table className="w-full min-w-[520px] border-collapse text-left text-[17px] text-ink">
         <thead>
-          <tr className="text-[14px] text-muted">
+          <tr className="text-[16px] text-muted">
             {head.map((cell, i) => (
               <th
                 key={i}
@@ -72,7 +72,7 @@ function RowGroup({ row, numeric, width }: { row: Row; numeric: (i: number) => b
         // Sumele din detalii se aliniază la ultimele coloane ale tabelului.
         const cells = [...Array(Math.max(0, width - 2 - amounts.length)).fill(""), ...amounts]
         return (
-          <tr key={d} className="align-baseline text-[15px] text-muted">
+          <tr key={d} className="align-baseline text-[17px] text-muted">
             <td />
             <td className="pb-2 pl-4">– {label}</td>
             {cells.map((amount, i) => (
