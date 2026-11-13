@@ -94,7 +94,7 @@ const grupCheltuiala = (item: { label: string; cat: string }) =>
   item.cat === "salarii"
     ? "Salarii și CAS"
     : item.cat === "materiale"
-      ? "Benzină și materiale"
+      ? "Încărcare și materiale"
       : item.label.startsWith("Chirie hală")
         ? "Chiria halei"
         : "Alte cheltuieli"
@@ -110,7 +110,7 @@ export const cheltuieli = [
     grup: "Rata creditului",
   },
 ].map((row) => ({ ...row, anual: row.lunar * 12 }))
-const GRUPURI = ["Salarii și CAS", "Chiria halei", "Rata creditului", "Benzină și materiale", "Alte cheltuieli"]
+const GRUPURI = ["Salarii și CAS", "Chiria halei", "Rata creditului", "Încărcare și materiale", "Alte cheltuieli"]
 export const cheltuieliPeGrupuri = GRUPURI.map((grup) => ({
   label: grup,
   value: cheltuieli.filter((row) => row.grup === grup).reduce((total, row) => total + row.lunar, 0),

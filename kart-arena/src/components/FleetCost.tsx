@@ -51,7 +51,7 @@ export function necessities(count: number): { label: string; amount: number; cat
     { label: "Sistem care măsoară timpul pe tur: aparat și program", amount: leiDinEuro(TIMING_BASE), cat: "utilaje" },
     { label: `Senzori de timp montați pe karturi, ${count} bucăți`, amount: leiDinEuro(count * TRANSPONDER), cat: "utilaje" },
     { label: "Lumini pentru pistă, 8 lămpi", amount: leiDinEuro(700), cat: "utilaje" },
-    { label: "Ventilație de evacuare", amount: leiDinEuro(2000), cat: "utilaje" },
+    { label: "Ventilație pentru hală", amount: leiDinEuro(2000), cat: "utilaje" },
     { label: "Stingătoare și echipament contra incendiilor", amount: leiDinEuro(250), cat: "utilaje" },
     {
       label: `Autosim, ${AUTOSIM_POSTURI} posturi: scaun, volan, pedale, calculator, ecran`,
@@ -101,8 +101,8 @@ export function salariuNet(brut: number) {
   const impozit = Math.max(0, brut - SCUTIRE - medical) * 0.12
   return brut - medical - impozit
 }
-const BENZINA = 32.45
-const LITRI_LA_PORNIRE = 528
+// Karturi electrice: ~8 kWh pe oră de mers, ~110 ore de pistă pe lună pentru 6 karturi.
+const KWH_INCARCARE_LA_PORNIRE = 900
 const CURENT = rotund(800 * 3.56 * 1.2)
 
 const zecimale = new Intl.NumberFormat("ro-RO", {
@@ -125,7 +125,7 @@ export function cheltuieliLunare(count: number): { label: string; amount: number
       amount: Math.round(ANGAJATI.reduce((sum, om) => sum + om.brut * om.persoane, 0) * CAS),
       cat: "salarii",
     },
-    { label: "Benzină", amount: rotund(LITRI_LA_PORNIRE * parte * BENZINA), cat: "materiale" },
+    { label: "Curent pentru încărcarea karturilor electrice", amount: rotund(KWH_INCARCARE_LA_PORNIRE * parte * 3.56 * 1.2), cat: "materiale" },
     {
       label: `Chirie hală, ${HALA_MP} m², Botanica, contract pe ${HALA_CHIRIE_ANI} ani: ${numarEuro.format(HALA_CHIRIE_EURO)} € pe lună`,
       amount: CHIRIE_HALA,
@@ -133,7 +133,7 @@ export function cheltuieliLunare(count: number): { label: string; amount: number
     },
     { label: "Energie electrică", amount: CURENT, cat: "alte" },
     { label: "Apă și canalizare", amount: 250, cat: "alte" },
-    { label: "Ulei și piese", amount: rotund(2000 * parte), cat: "materiale" },
+    { label: "Piese și întreținere", amount: rotund(2000 * parte), cat: "materiale" },
     { label: "Cagule de unică folosință, purtate sub cască", amount: 400, cat: "materiale" },
     { label: "Promovare", amount: 10000, cat: "alte" },
     { label: "Internet", amount: 300, cat: "alte" },

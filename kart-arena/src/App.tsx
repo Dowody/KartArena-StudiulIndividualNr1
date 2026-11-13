@@ -110,7 +110,7 @@ const swot = [
     letter: "W",
     points: [
       "Investiție mare la început.",
-      "Cheltuieli lunare pentru benzină, salarii și energie.",
+      "Cheltuieli lunare pentru salarii, chirie și energie.",
       "Afacerea nu este încă cunoscută.",
     ],
   },
@@ -331,7 +331,7 @@ export default function App() {
         </section>
 
         <section id="serviciu" className="scroll-mt-14 bg-black px-6 py-24 text-center text-white sm:py-32">
-          <p className="text-[16px] font-medium text-link-on-dark">Prezentarea serviciului</p>
+          <p className="text-[16px] text-[#86868b]">Prezentarea serviciului</p>
           <h2 className="mx-auto mt-3 max-w-[860px] text-[40px] leading-[1.07] font-semibold tracking-tight sm:text-[56px]">
             Curse de karting în interior, autosim și zonă de relaxare.
           </h2>
@@ -347,7 +347,7 @@ export default function App() {
           </h2>
           <Specs items={description} compact />
           <div className="mx-auto mt-8 w-full max-w-[1040px] border-t border-black/10 pt-10 lg:mt-4 lg:pt-8">
-            <p className="text-[16px] font-medium text-link">Procesul tehnologic</p>
+            <p className="text-[16px] text-muted">Procesul tehnologic</p>
             <h3 className="mt-2 text-[28px] font-semibold tracking-tight text-ink sm:text-[32px]">
               Cum decurge o vizită
             </h3>
@@ -359,7 +359,7 @@ export default function App() {
               />
               {steps.map((step, index) => (
                 <li key={step.title} className="relative flex gap-5 lg:flex-col lg:gap-0">
-                  <span className="glass flex size-10 shrink-0 items-center justify-center rounded-full text-[15px] font-semibold text-link">
+                  <span className="glass flex size-10 shrink-0 items-center justify-center rounded-full text-[15px] font-semibold text-ink">
                     {index + 1}
                   </span>
                   <div className="lg:mt-5">
@@ -380,7 +380,7 @@ export default function App() {
             <ul className="mt-14 grid gap-3 md:grid-cols-3">
               {localReasons.map((reason, i) => (
                 <li key={reason.title} className="glass rounded-[28px] px-8 py-8">
-                  <span className="text-[16px] font-medium text-link">0{i + 1}</span>
+                  <span className="text-[16px] text-muted">0{i + 1}</span>
                   <h3 className="mt-2 text-[22px] font-semibold tracking-tight text-ink">{reason.title}</h3>
                   <p className="mt-3 text-[17px] leading-relaxed text-ink">{reason.text}</p>
                 </li>
@@ -391,7 +391,7 @@ export default function App() {
 
         <section id="swot" className="scroll-mt-14 px-6 py-24 sm:py-32">
           <div className="mx-auto max-w-[1100px]">
-            <p className="text-center text-[16px] font-medium text-link">Analiza SWOT</p>
+            <p className="text-center text-[16px] text-muted">Analiza SWOT</p>
             <h2 className="mx-auto mt-3 max-w-[860px] text-center text-[40px] leading-[1.07] font-semibold tracking-tight text-ink sm:text-[56px]">
               Analiza afacerii
             </h2>
